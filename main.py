@@ -6,7 +6,9 @@ from discord.ext import tasks
 import pytz
 import logging
 
-token = "MTE1ODYwMTA4MzkyOTc2NzkzNw.GsBalY.Qu9IQ-BTTBmCtYgbjUt_FEx5lnmi6y_yEn48C0"
+
+token = os.getenv("DISCORD_TOKEN")
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
