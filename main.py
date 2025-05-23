@@ -46,6 +46,9 @@ async def on_message(message):
         pause_until = datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=24)
         await message.channel.send("*sleeping for 24 hours*")
 
+    if message.content.startswith('$unpause'):
+        pause_until = None
+        await message.channel.send("*waking up! Daily pings resumed*")
 
 class MyCog:
     def __init__(self, client):
