@@ -48,7 +48,7 @@ async def on_message(message):
 
     if message.content.startswith('$unpause'):
         pause_until = None
-        await message.channel.send("*waking up! Daily pings resumed*")
+        await message.channel.send("*waking up*")
 
 class MyCog:
     def __init__(self, client):
