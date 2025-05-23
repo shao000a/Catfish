@@ -5,6 +5,9 @@ import asyncio
 from discord.ext import tasks
 import pytz
 import logging
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 token = os.getenv("DISCORD_TOKEN")
