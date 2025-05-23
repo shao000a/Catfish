@@ -43,8 +43,8 @@ async def on_message(message):
         await message.channel.send('*catfish noises*')
 
     if message.content.startswith('$pause'):
-        pause_until = datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=3)
-        await message.channel.send("*sleeping for 3 hours*")
+        pause_until = datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=24)
+        await message.channel.send("*sleeping for 24 hours*")
 
 
 class MyCog:
