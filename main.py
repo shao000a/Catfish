@@ -75,27 +75,30 @@ class MyCog:
     @daily_ping_task.before_loop
     async def before_daily_ping(self):
         await self.client.wait_until_ready()
-
+        
     @tasks.loop(minutes=5)
     async def blog_check_task(self):
-        url = "https://blog-en.lordofheroes.com"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-
-                    latest_post = soup.select_one("div.post-item a.link")
-                    if latest_post:
-                        post_url = latest_post["href"]
-                        if not post_url.startswith("http"):
-                            post_url = f"https://blog-en.lordofheroes.com{post_url}"
-
-                        if post_url != self.last_blog_url:
-                            self.last_blog_url = post_url
-                            channel = self.client.get_channel(CHANNEL_ID)
-                            if channel:
-                                await channel.send(f"(=^ ◡ ^=)ﾉ 📰\n{post_url}")
+        try:
+            url = "https://blog-en.lordofheroes.com"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        html = await response.text()
+                        soup = BeautifulSoup(html, "html.parser")
+    
+                        latest_post = soup.select_one("article.post-card a.post-card-image-link")
+                        if latest_post:
+                            post_url = latest_post["href"]
+                            if not post_url.startswith("http"):
+                                post_url = f"https://blog-en.lordofheroes.com{post_url}"
+    
+                            if post_url != self.last_blog_url:
+                                self.last_blog_url = post_url
+                                channel = self.client.get_channel(CHANNEL_ID)
+                                if channel:
+                                    await channel.send(f"(=^ ◡ ^=)ﾉ 📰\n{post_url}")
+        except Exception as e:
+            logger.error(f"Error in blog_check_task: {e}")
 
     @blog_check_task.before_loop
     async def before_blog_check(self):
