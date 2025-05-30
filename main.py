@@ -22,7 +22,8 @@ client = discord.Client(intents=intents, max_messages=1000)
 
 DAILY_PING_TIME = "03:00:00"  
 CHANNEL_ID = 856978188974030858  
-ROLE_ID = 1164782256418721853    
+ROLE_ID_RAIDS = 1164782256418721853   
+ROLE_ID_BLOG = 1378092973086212116
 
 pause_until = None  
 
@@ -69,14 +70,14 @@ class MyCog:
         if 1 <= now.weekday() <= 6 and current_time == DAILY_PING_TIME:
             channel = self.client.get_channel(CHANNEL_ID)
             if channel:
-                await channel.send(f"<@&{ROLE_ID}> woof woof bark! GRR.... ヽ(ｏ`皿′ｏ)ﾉ ")
+                await channel.send(f"<@&{ROLE_ID_RAIDS}> woof woof bark! GRR.... ヽ(ｏ`皿′ｏ)ﾉ ")
             await asyncio.sleep(60)  # Prevent multiple pings in the same second loop
 
     @daily_ping_task.before_loop
     async def before_daily_ping(self):
         await self.client.wait_until_ready()
         
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=1)
     async def blog_check_task(self):
         try:
             url = "https://blog-en.lordofheroes.com"
@@ -96,7 +97,7 @@ class MyCog:
                                 self.last_blog_url = post_url
                                 channel = self.client.get_channel(CHANNEL_ID)
                                 if channel:
-                                    await channel.send(f"(=^ ◡ ^=)ﾉ 📰\n{post_url}")
+                                    await channel.send(f"<@&{ROLE_ID_BLOG}> (=＾● ⋏ ●＾=)づﾉ 📰\n{post_url}")
         except Exception as e:
             logger.error(f"Error in blog_check_task: {e}")
 
