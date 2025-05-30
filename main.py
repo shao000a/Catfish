@@ -69,7 +69,7 @@ class MyCog:
             return  
 
         if 1 <= now.weekday() <= 6 and current_time == DAILY_PING_TIME:
-            channel = self.client.get_channel(CHANNEL_ID_BLOG)
+            channel = self.client.get_channel(CHANNEL_ID)
             if channel:
                 await channel.send(f"<@&{ROLE_ID_RAIDS}> woof woof bark! GRR.... ヽ(ｏ`皿′ｏ)ﾉ ")
             await asyncio.sleep(60)  # Prevent multiple pings in the same second loop
@@ -96,7 +96,7 @@ class MyCog:
     
                             if post_url != self.last_blog_url:
                                 self.last_blog_url = post_url
-                                channel = self.client.get_channel(CHANNEL_ID)
+                                channel = self.client.get_channel(CHANNEL_ID_BLOG)
                                 if channel:
                                     await channel.send(f"<@&{ROLE_ID_BLOG}> (=＾● ⋏ ●＾=)づﾉ 📰\n{post_url}")
         except Exception as e:
