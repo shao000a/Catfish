@@ -22,6 +22,7 @@ client = discord.Client(intents=intents, max_messages=1000)
 
 DAILY_PING_TIME = "03:00:00"  
 CHANNEL_ID = 856978188974030858  
+CHANNEL_ID_BLOG = 906300174148726785 
 ROLE_ID_RAIDS = 1164782256418721853   
 ROLE_ID_BLOG = 1378092973086212116
 
@@ -68,7 +69,7 @@ class MyCog:
             return  
 
         if 1 <= now.weekday() <= 6 and current_time == DAILY_PING_TIME:
-            channel = self.client.get_channel(CHANNEL_ID)
+            channel = self.client.get_channel(CHANNEL_ID_BLOG)
             if channel:
                 await channel.send(f"<@&{ROLE_ID_RAIDS}> woof woof bark! GRR.... ヽ(ｏ`皿′ｏ)ﾉ ")
             await asyncio.sleep(60)  # Prevent multiple pings in the same second loop
