@@ -55,6 +55,7 @@ async def on_message(message):
 class MyCog:
     def __init__(self, client):
         self.client = client
+        self.seen_blog_urls = set()   
         self.last_blog_url = None
         self.daily_ping_task.start()
         self.blog_check_task.start()
@@ -88,17 +89,17 @@ class MyCog:
                         html = await response.text()
                         soup = BeautifulSoup(html, "html.parser")
     
-                        latest_post = soup.select_one("article.post-card a.post-card-image-link")
-                        if latest_post:
-                            post_url = latest_post["href"]
+                        latest_posts = soup.select("article.post-card a.post-card-image-link")[:5]
+                        for post in reversed(latest_posts):  # reversed to notify oldest first
+                            post_url = post["href"]
                             if not post_url.startswith("http"):
                                 post_url = f"https://blog-en.lordofheroes.com{post_url}"
-    
-                            if post_url != self.last_blog_url:
-                                self.last_blog_url = post_url
+                            if post_url not in self.seen_blog_urls:
+                                self.seen_blog_urls.add(post_url)
                                 channel = self.client.get_channel(CHANNEL_ID_BLOG)
                                 if channel:
                                     await channel.send(f"<@&{ROLE_ID_BLOG}> (=＾● ⋏ ●＾=)づﾉ 📰\n{post_url}")
+
         except Exception as e:
             logger.error(f"Error in blog_check_task: {e}")
 
