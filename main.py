@@ -2,8 +2,6 @@ import discord
 import os
 import datetime
 import asyncio
-import aiohttp
-from bs4 import BeautifulSoup
 from discord.ext import tasks
 import pytz
 import logging
@@ -23,20 +21,27 @@ client = discord.Client(intents=intents, max_messages=1000)
 
 DAILY_PING_HOUR = 3  # UTC
 CHANNEL_ID = 856978188974030858
-CHANNEL_ID_BLOG = 906300174148726785
 ROLE_ID_RAIDS = 1164782256418721853
-ROLE_ID_BLOG = 1378092973086212116
 
 pause_until = None
-cog = None  #prevents duplicate task starts
+cog = None  # prevents duplicate task starts
+startup_sent = False
 
 
 @client.event
 async def on_ready():
-    global cog
+    global cog, startup_sent
+
     if cog is None:
         print(f"Logged in as {client.user}")
         cog = MyCog(client)
+
+    # startup message (only once)
+    if not startup_sent:
+        channel = client.get_channel(CHANNEL_ID)
+        if channel:
+            await channel.send("Thank you (˃̣̣̥ᯅ˂̣̣̥)")
+        startup_sent = True
 
 
 @client.event
@@ -57,32 +62,15 @@ async def on_message(message):
         pause_until = None
         await message.channel.send("*waking up*")
 
-@client.event
-async def on_ready():
-    global cog, startup_sent
 
-    if cog is None:
-        print(f"Logged in as {client.user}")
-        cog = MyCog(client)
-
-    if not startup_sent:
-        channel = client.get_channel(CHANNEL_ID)
-        if channel:
-            await channel.send("Thank you (˃̣̣̥ᯅ˂̣̣̥)")
-        startup_sent = True
-        
 class MyCog:
     def __init__(self, client: discord.Client):
         self.client = client
-
-        self.seen_blog_urls = set()
         self.last_ping_date = None
 
         self.daily_ping_task.start()
-        self.blog_check_task.start()
 
-    #Daily
-
+    # Daily
     @tasks.loop(seconds=30)
     async def daily_ping_task(self):
         global pause_until
@@ -115,6 +103,5 @@ class MyCog:
     async def before_daily_ping(self):
         await self.client.wait_until_ready()
 
-    #Blog
 
 client.run(TOKEN)
