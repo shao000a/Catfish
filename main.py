@@ -57,7 +57,20 @@ async def on_message(message):
         pause_until = None
         await message.channel.send("*waking up*")
 
+@client.event
+async def on_ready():
+    global cog, startup_sent
 
+    if cog is None:
+        print(f"Logged in as {client.user}")
+        cog = MyCog(client)
+
+    if not startup_sent:
+        channel = client.get_channel(CHANNEL_ID)
+        if channel:
+            await channel.send("Thank you (˃̣̣̥ᯅ˂̣̣̥)")
+        startup_sent = True
+        
 class MyCog:
     def __init__(self, client: discord.Client):
         self.client = client
@@ -103,47 +116,6 @@ class MyCog:
         await self.client.wait_until_ready()
 
     #Blog
-
-    @tasks.loop(minutes=1)
-    async def blog_check_task(self):
-        url = "https://blog-en.lordofheroes.com"
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
-                    if response.status != 200:
-                        return
-
-                    html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-
-                    posts = soup.select(
-                        "article.post-card a.post-card-image-link"
-                    )[:5]
-
-                    # Notify oldest → newest
-                    for post in reversed(posts):
-                        post_url = post.get("href")
-
-                        if not post_url:
-                            continue
-
-                        if not post_url.startswith("http"):
-                            post_url = f"https://blog-en.lordofheroes.com{post_url}"
-
-                        if post_url in self.seen_blog_urls:
-                            continue
-
-                        self.seen_blog_urls.add(post_url)
-
-                        channel = self.client.get_channel(CHANNEL_ID_BLOG)
-                        if channel:
-                            await channel.send(
-                                f"<@&{ROLE_ID_BLOG}> (=＾● ⋏ ●＾=)づﾉ 📰\n{post_url}"
-                            )
-
-        except Exception as e:
-            logger.error(f"Error in blog_check_task: {e}")
 
     @blog_check_task.before_loop
     async def before_blog_check(self):
