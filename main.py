@@ -117,9 +117,4 @@ class MyCog:
 
     #Blog
 
-    @blog_check_task.before_loop
-    async def before_blog_check(self):
-        await self.client.wait_until_ready()
-
-
 client.run(TOKEN)
